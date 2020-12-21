@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES5",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "removeComments": true
+  },
+  "include": [
+    "src",
+    "types.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
