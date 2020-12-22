@@ -107,7 +107,7 @@ export class Client {
 
     async RETR(msgOrder?: string) {
         await this._authorize()
-        const [, stream] = await this._connection.send(
+        const [_, stream] = await this._connection.send(
             Command.create('RETR', [msgOrder])
         )
         return utils.stream2String(stream)
@@ -131,7 +131,7 @@ export class Client {
 
     async TOP(msgOrder: string, n = 0) {
         await this._authorize()
-        const [, stream] = await this._connection.send(
+        const [_, stream] = await this._connection.send(
             Command.create('TOP', [msgOrder], n)
         )
         return utils.stream2String(stream)

@@ -5,7 +5,9 @@
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "removeComments": true
+    "removeComments": true,
+    "sourceMap": true,
+    "declaration": true
   },
   "include": [
     "src"

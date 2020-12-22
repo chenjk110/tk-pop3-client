@@ -1,5 +1,7 @@
 # POP3 Client
 
+![](https://img.shields.io/github/package-json/v/chenjk110/tk-pop3-client?color=green&label=tk-pop3-client&logo=npm&style=flat-square)
+
 **References:**
 
 [POP3 RFC](https://tools.ietf.org/html/rfc1939)

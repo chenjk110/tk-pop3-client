@@ -1,4 +1,4 @@
-import TLS, { TLSSocket } from 'tls'
+import * as TLS from 'tls'
 import { Socket } from 'net'
 import { EventEmitter } from 'events'
 import { Readable } from 'stream'
@@ -34,7 +34,7 @@ export class Connection extends EventEmitter {
     public tls: boolean
     public timeout: number
 
-    private _socket: null | Socket | TLSSocket = null
+    private _socket: null | Socket | TLS.TLSSocket = null
     private _stream: null | Readable = null
     private _commandName: string = ''
 
@@ -98,7 +98,7 @@ export class Connection extends EventEmitter {
 
         if (!isNaN(+timeout)) {
             this._socket.setTimeout(+timeout, () => {
-                const err = new Error('Connect timeout.')
+                const err = new Error('Connection timeout')
                 if (this.listeners('end').length) {
                     this.emit('end', err)
                 }
@@ -176,7 +176,7 @@ export class Connection extends EventEmitter {
     public async send(payload: string | Command): Promise<[string, Readable]> {
         // validating socket
         if (!this._socket) {
-            throw new Error('no-socket')
+            throw new Error('No socket')
         }
 
         // validating stream
@@ -185,9 +185,11 @@ export class Connection extends EventEmitter {
             handleReject: rejectValidateStream,
             promise: validateStream
         } = createPromiseRefs()
+
         if (!this._stream) {
             resolveValidateStream(true)
         }
+
         this.once('end', (err) => {
             if (err) {
                 rejectValidateStream(err)
@@ -195,6 +197,7 @@ export class Connection extends EventEmitter {
             }
             resolveValidateStream(true)
         })
+        
         this.once('error', (err) => rejectValidateStream(err))
 
         await validateStream // await for validation
@@ -209,7 +212,7 @@ export class Connection extends EventEmitter {
             promise,
         } = createPromiseRefs<[string, Readable]>()
         if (!this._socket) {
-            handleReject(new Error('no-socket'))
+            handleReject(new Error('No socket'))
         }
         this._socket.write(`${payload.toString()}${CRLF}`, 'utf8')
         this.once('error', handleReject)
@@ -222,11 +225,11 @@ export class Connection extends EventEmitter {
 
     private _destroy() {
         Reflect.setPrototypeOf(this, null)
-        const keys = Object.keys(this)
+        const keys = Reflect.ownKeys(this)
         for (const key of keys) {
             Reflect.deleteProperty(this, key)
         }
-        Object.defineProperty(this, '_destroyed', { value: true })
+        Reflect.defineProperty(this, '_destroyed', { value: true })
     }
 
     public destroy() {

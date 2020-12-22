@@ -4,7 +4,7 @@ import { TERM_BUF_S, TERM_BUF, INDICATOR_OK_BUF, INDICATOR_ERR_BUF, CRLF } from 
 
 export const containsEndedBufs = (buffer: Buffer) => TERM_BUF_S.some((buf) => buf.equals(buffer))
 
-export const containsTermBuf = (buffer: Buffer) => buffer.slice(-5).equals(TERM_BUF)
+export const containsTermBuf = (buffer: Buffer) => buffer.slice(-TERM_BUF.length).equals(TERM_BUF)
 
 export const omitTermBuf = (buffer: Buffer) => buffer.slice(0, TERM_BUF.length)
 
