@@ -161,18 +161,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     _this._pushStream(buffer);
                     return;
                 }
-                if (utils_1.isResERR(buffer)) {
-                    var err_1 = new Error(utils_1.pickMessageContent(buffer).toString());
-                    _this.emit('error', err_1);
-                    return;
-                }
                 if (utils_1.isResOK(buffer)) {
-                    var firstLineEndIndex = buffer.indexOf(constants_1.CRLF_BUF);
-                    var infoBuffer = buffer.slice(4, firstLineEndIndex);
-                    var stream = null;
+                    var firstLineEndIndex = buffer.indexOf(constants_1.CRLF);
+                    var infoBuffer = utils_1.pickMessageContent(buffer.slice(0, firstLineEndIndex));
+                    var stream = void 0;
                     if (constants_1.MULTI_LINE_CMD_NAMES.includes(_this._commandName)) {
                         stream = _this._resetStream();
-                        var bodyBuffer = buffer.slice(firstLineEndIndex + 2);
+                        var bodyBuffer = buffer.slice(firstLineEndIndex + constants_1.CRLF.length);
                         if (bodyBuffer[0]) {
                             _this._pushStream(bodyBuffer);
                         }
@@ -181,7 +176,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     handleResolve(true);
                     return;
                 }
-                var err = new Error('Unexpected response');
+                if (utils_1.isResERR(buffer)) {
+                    var err_1 = new Error(utils_1.pickMessageContent(buffer).toString());
+                    _this.emit('error', err_1);
+                    return;
+                }
+                var err = new Error("Unexpected response:\n" + buffer.toString());
                 handleReject(err);
             });
             this._socket.on('error', function (err) {
@@ -230,12 +230,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                             return [4, validateStream];
                         case 1:
                             _c.sent();
-                            this._commandName = payload.toString().split(' ')[0];
+                            try {
+                                this._commandName = payload.toString().split(' ')[0].trim();
+                            }
+                            catch (err) {
+                                console.error(err);
+                                this._commandName = '';
+                            }
                             _b = utils_1.createPromiseRefs(), handleResolve = _b.handleResolve, handleReject = _b.handleReject, promise = _b.promise;
                             if (!this._socket) {
                                 handleReject(new Error('No socket'));
                             }
-                            this._socket.write("" + payload.toString() + constants_1.CRLF, 'utf8');
+                            this._socket.write(payload.toString(), 'utf8');
                             this.once('error', handleReject);
                             this.once('response', function (info, stream) {
                                 _this.removeListener('error', handleReject);

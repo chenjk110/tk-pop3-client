@@ -3,8 +3,8 @@ export const TLS_PORT = 995
 
 export const INDICATOR_OK = '+OK'
 export const INDICATOR_ERR = '-ERR'
-export const INDICATOR_OK_BUF = Buffer.from(INDICATOR_OK, 'ascii')
-export const INDICATOR_ERR_BUF = Buffer.from(INDICATOR_ERR, 'ascii')
+export const INDICATOR_OK_BUF = Buffer.from(INDICATOR_OK)
+export const INDICATOR_ERR_BUF = Buffer.from(INDICATOR_ERR)
 
 export const CRLF = '\r\n'
 export const CRLF_BUF = Buffer.from('\r\n')

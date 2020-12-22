@@ -1,6 +1,6 @@
 {
   "name": "tk-pop3-client",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A Simple POP3 Client written with TypeScript",
   "main": "src/index.ts",
   "exports": {

@@ -5,7 +5,6 @@ import { Readable } from 'stream'
 import { Command } from './command'
 import {
     CRLF,
-    CRLF_BUF,
     MULTI_LINE_CMD_NAMES,
     TLS_PORT,
     PORT,
@@ -117,6 +116,27 @@ export class Connection extends EventEmitter {
                 return
             }
 
+            // '+OK'
+            if (isResOK(buffer)) {
+                const firstLineEndIndex = buffer.indexOf(CRLF)
+                const infoBuffer = pickMessageContent(buffer.slice(0, firstLineEndIndex))
+
+                let stream: Readable
+
+                // verifying command that is in multi-line pattern
+                if (MULTI_LINE_CMD_NAMES.includes(this._commandName)) {
+                    stream = this._resetStream()
+                    const bodyBuffer = buffer.slice(firstLineEndIndex + CRLF.length)
+                    if (bodyBuffer[0]) {
+                        this._pushStream(bodyBuffer)
+                    }
+                }
+
+                this.emit('response', infoBuffer.toString(), stream)
+                handleResolve(true)
+                return
+            }
+
             // '-ERR'
             if (isResERR(buffer)) {
                 const err = new Error(pickMessageContent(buffer).toString())
@@ -124,26 +144,8 @@ export class Connection extends EventEmitter {
                 return
             }
 
-            // '+OK'
-            if (isResOK(buffer)) {
-                const firstLineEndIndex = buffer.indexOf(CRLF_BUF)
-                const infoBuffer = buffer.slice(4, firstLineEndIndex)
-                let stream: Readable = null
-                // verifying command that is in multi-line pattern
-                if (MULTI_LINE_CMD_NAMES.includes(this._commandName)) {
-                    stream = this._resetStream()
-                    const bodyBuffer = buffer.slice(firstLineEndIndex + 2)
-                    if (bodyBuffer[0]) {
-                        this._pushStream(bodyBuffer)
-                    }
-                }
-                this.emit('response', infoBuffer.toString(), stream)
-                handleResolve(true)
-                return
-            }
-
             // Unexpected Response Error
-            const err = new Error('Unexpected response')
+            const err = new Error(`Unexpected response:\n${buffer.toString()}`)
             handleReject(err)
         })
 
@@ -197,13 +199,18 @@ export class Connection extends EventEmitter {
             }
             resolveValidateStream(true)
         })
-        
+
         this.once('error', (err) => rejectValidateStream(err))
 
         await validateStream // await for validation
 
         // cache command name
-        this._commandName = payload.toString().split(' ')[0]
+        try {
+            this._commandName = payload.toString().split(' ')[0].trim()
+        } catch (err) {
+            console.error(err)
+            this._commandName = ''
+        }
 
         // sending command
         const {
@@ -211,10 +218,13 @@ export class Connection extends EventEmitter {
             handleReject,
             promise,
         } = createPromiseRefs<[string, Readable]>()
+
         if (!this._socket) {
             handleReject(new Error('No socket'))
         }
-        this._socket.write(`${payload.toString()}${CRLF}`, 'utf8')
+
+        this._socket.write(payload.toString(), 'utf8')
+
         this.once('error', handleReject)
         this.once('response', (info: string, stream: Readable) => {
             this.removeListener('error', handleReject)
@@ -251,7 +261,6 @@ export class Connection extends EventEmitter {
             this.emit('destroy', err)
             handleReject(err)
         }
-
         return promise
     }
 }

@@ -22,13 +22,13 @@ var Command = (function () {
         var raw = "" + this.name;
         if (Array.isArray(this.params) && this.params.length) {
             this.params.filter(Boolean).forEach(function (param) {
-                raw += ' ' + param;
+                raw = raw + ' ' + param;
             });
         }
         if (this.message) {
-            raw += ' ' + this.message.toString();
+            raw = raw + ' ' + this.message.toString();
         }
-        raw += constants_1.CRLF;
+        raw = raw + constants_1.CRLF;
         return raw;
     };
     Command.prototype.toString = function () {

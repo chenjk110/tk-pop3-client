@@ -11,7 +11,7 @@ import * as TLS from 'tls';
 import { Socket } from 'net';
 import { EventEmitter } from 'events';
 import { Readable } from 'stream';
-import { CRLF, CRLF_BUF, MULTI_LINE_CMD_NAMES, TLS_PORT, PORT, } from './constants';
+import { CRLF, MULTI_LINE_CMD_NAMES, TLS_PORT, PORT, } from './constants';
 import { containsEndedBufs, containsTermBuf, omitTermBuf, createPromiseRefs, isResERR, isResOK, pickMessageContent, } from './utils';
 export class Connection extends EventEmitter {
     constructor(options) {
@@ -83,18 +83,13 @@ export class Connection extends EventEmitter {
                 this._pushStream(buffer);
                 return;
             }
-            if (isResERR(buffer)) {
-                const err = new Error(pickMessageContent(buffer).toString());
-                this.emit('error', err);
-                return;
-            }
             if (isResOK(buffer)) {
-                const firstLineEndIndex = buffer.indexOf(CRLF_BUF);
-                const infoBuffer = buffer.slice(4, firstLineEndIndex);
-                let stream = null;
+                const firstLineEndIndex = buffer.indexOf(CRLF);
+                const infoBuffer = pickMessageContent(buffer.slice(0, firstLineEndIndex));
+                let stream;
                 if (MULTI_LINE_CMD_NAMES.includes(this._commandName)) {
                     stream = this._resetStream();
-                    const bodyBuffer = buffer.slice(firstLineEndIndex + 2);
+                    const bodyBuffer = buffer.slice(firstLineEndIndex + CRLF.length);
                     if (bodyBuffer[0]) {
                         this._pushStream(bodyBuffer);
                     }
@@ -103,7 +98,12 @@ export class Connection extends EventEmitter {
                 handleResolve(true);
                 return;
             }
-            const err = new Error('Unexpected response');
+            if (isResERR(buffer)) {
+                const err = new Error(pickMessageContent(buffer).toString());
+                this.emit('error', err);
+                return;
+            }
+            const err = new Error(`Unexpected response:\n${buffer.toString()}`);
             handleReject(err);
         });
         this._socket.on('error', (err) => {
@@ -145,12 +145,18 @@ export class Connection extends EventEmitter {
             });
             this.once('error', (err) => rejectValidateStream(err));
             yield validateStream;
-            this._commandName = payload.toString().split(' ')[0];
+            try {
+                this._commandName = payload.toString().split(' ')[0].trim();
+            }
+            catch (err) {
+                console.error(err);
+                this._commandName = '';
+            }
             const { handleResolve, handleReject, promise, } = createPromiseRefs();
             if (!this._socket) {
                 handleReject(new Error('No socket'));
             }
-            this._socket.write(`${payload.toString()}${CRLF}`, 'utf8');
+            this._socket.write(payload.toString(), 'utf8');
             this.once('error', handleReject);
             this.once('response', (info, stream) => {
                 this.removeListener('error', handleReject);
