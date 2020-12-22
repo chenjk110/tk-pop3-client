@@ -1,8 +1,13 @@
 import * as utils from './utils'
 import * as constans from './constants'
 import { Command } from './command'
-import { Connection } from './connection'
+import { Connection, IConnectionOptions } from './connection'
 import { Readable } from 'stream'
+
+interface IClientOptions extends IConnectionOptions {
+    username: string
+    password: string
+}
 
 export class Client {
 
@@ -18,7 +23,7 @@ export class Client {
     private _connection: Connection = null
     private _PASSInfo: string = undefined
 
-    constructor(options: TKPOP3Client.IClientOptions) {
+    constructor(options: IClientOptions) {
         // validating options
         if (!options || typeof options !== 'object') {
             throw new TypeError('Invalid Options.')
@@ -29,7 +34,7 @@ export class Client {
         })
     }
 
-    static create(options: TKPOP3Client.IClientOptions) {
+    static create(options: IClientOptions) {
         return new Client(options)
     }
 

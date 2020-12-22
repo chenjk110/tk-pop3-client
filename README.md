@@ -34,90 +34,139 @@ client.QUIT().then(info => {
 ## Client
 
 ```ts
-static create(options: TKPOP3Client.IClientOptions): Client;
+interface IClientOptions {
+    username: string
+    password: string
+    host: string
+    port: number
+    tls?: boolean
+    timeout?: number
+}
+
 ```
 
 ```ts
-UIDL(msgOrder?: string): Promise<string[] | string[][]>;
+static create(options: IClientOptions): Client
 ```
 
 ```ts
-NOOP(): Promise<void>;
+public UIDL(msgOrder?: string): Promise<string[] | string[][]>
 ```
 
 ```ts
-LIST(msgOrder?: string): Promise<string[] | string[][]>;
+public NOOP(): Promise<void>
 ```
 
 ```ts
-RSET(): Promise<string>;
+public LIST(msgOrder?: string): Promise<string[] | string[][]>
 ```
 
 ```ts
-RETR(msgOrder?: string): Promise<string>;
+public RSET(): Promise<string>
 ```
 
 ```ts
-DELE(msgOrder?: string): Promise<string>;
+public RETR(msgOrder?: string): Promise<string>
 ```
 
 ```ts
-STAT(): Promise<string>;
+public DELE(msgOrder?: string): Promise<string>
 ```
 
 ```ts
-TOP(msgOrder: string, n?: number): Promise<string>;
+public STAT(): Promise<string>
 ```
 
 ```ts
-QUIT(): Promise<string>;
+public TOP(msgOrder: string, n?: number): Promise<string>
+```
+
+```ts
+public QUIT(): Promise<string>
 ```
 
 
 ## Command
-
 ```ts
-static create(name: TKPOP3Client.CommandKeywords, params?: string[], message?: TKPOP3Client.CommandMessageContent): Command;
+type CommandKeywords =
+    // Minimal POP3 Command Keywords:
+    | 'USER'
+    | 'PASS'
+    | 'QUIT'
+    | 'STAT'
+    | 'LIST'
+    | 'RETR'
+    | 'DELE'
+    | 'NOOP'
+    | 'RSET'
+    | 'QUIT'
+    // Optional POP3 Command Keywords:
+    | 'APOP'
+    | 'TOP'
+    | 'UIDL'
+
+type CommandMessageContent = 
+    | string 
+    | Buffer 
+    | { toString(): string }
+    
 ```
 
 ```ts
-static combine(...commands: Command[]): string;
+static create(name: CommandKeywords, params?: string[], message?: CommandMessageContent): Command
 ```
 
 ```ts
-toRaw(): string;
+static combine(...commands: Command[]): string
 ```
 
 ```ts
-toString(): string;
+public toRaw(): string
 ```
 
 ```ts
-update(params: string[], message: TKPOP3Client.CommandMessageContent): this;
+public toString(): string
 ```
 
 ```ts
-updateParams(params: string[]): this;
+public update(params: string[], message: CommandMessageContent): this
 ```
 
 ```ts
-updateMessage(message: TKPOP3Client.CommandMessageContent): this;
+public updateParams(params: string[]): this
+```
+
+```ts
+public updateMessage(message: CommandMessageContent): this
 ```
 
 
 ## Connection
 ```ts
-get connected(): boolean;
+interface IConnectionOptions {
+    host: string
+    port: number
+    tls?: boolean
+    timeout?: number
+}
 ```
 
 ```ts
-static create(options: TKPOP3Client.IConnectionOptions): Connection;
+get connected(): boolean
 ```
 
 ```ts
-connect(): Promise<true>;
+static create(options: IConnectionOptions): Connection
 ```
 
 ```ts
-send(payload: string | Command): Promise<[string, Readable]>;
+public connect(): Promise<true>
+```
+
+```ts
+public send(payload: string | Command): Promise<[string, Readable]>
+```
+
+```ts
+public destroy(): Promise<true>
 ```

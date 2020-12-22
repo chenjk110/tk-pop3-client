@@ -20,7 +20,14 @@ import {
     pickMessageContent,
 } from './utils'
 
-export class Connection extends EventEmitter implements TKPOP3Client.IConnection {
+export interface IConnectionOptions {
+    host: string
+    port: number
+    tls?: boolean
+    timeout?: number
+}
+
+export class Connection extends EventEmitter {
 
     public host: string
     public port: number
@@ -35,7 +42,7 @@ export class Connection extends EventEmitter implements TKPOP3Client.IConnection
         return !!this._socket
     }
 
-    constructor(options: TKPOP3Client.IConnectionOptions) {
+    constructor(options: IConnectionOptions) {
         super()
         const { host, port, tls, timeout } = Object.assign({}, options)
         this.host = host
@@ -44,7 +51,7 @@ export class Connection extends EventEmitter implements TKPOP3Client.IConnection
         this.timeout = timeout
     }
 
-    static create(options: TKPOP3Client.IConnectionOptions) {
+    static create(options: IConnectionOptions) {
         return new Connection(options)
     }
 
@@ -210,6 +217,38 @@ export class Connection extends EventEmitter implements TKPOP3Client.IConnection
             this.removeListener('error', handleReject)
             handleResolve([info, stream])
         })
+        return promise
+    }
+
+    private _destroy() {
+        Reflect.setPrototypeOf(this, null)
+        const keys = Object.keys(this)
+        for (const key of keys) {
+            Reflect.deleteProperty(this, key)
+        }
+        Object.defineProperty(this, '_destroyed', { value: true })
+    }
+
+    public destroy() {
+        const { handleResolve, handleReject, promise } = createPromiseRefs<true>()
+        try {
+            if (this._stream) {
+                this._stream.removeAllListeners()
+                this._stream.destroy()
+            }
+            if (this._socket) {
+                this._socket.removeAllListeners()
+                this._socket.destroy()
+            }
+            this._destroy()
+            this.emit('destroy', null)
+            this.removeAllListeners()
+            handleResolve(true)
+        } catch (err) {
+            this.emit('destroy', err)
+            handleReject(err)
+        }
+
         return promise
     }
 }

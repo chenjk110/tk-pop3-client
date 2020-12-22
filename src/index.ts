@@ -1,5 +1,3 @@
-/// <reference path="../types.d.ts" />
-
 export * from './command'
 export * from './connection'
 export * from './client'

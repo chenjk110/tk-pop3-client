@@ -1,16 +1,35 @@
 import { CRLF } from './constants'
 
-export class Command implements TKPOP3Client.ICommand {
+type CommandKeywords =
+    // Minimal POP3 Command Keywords:
+    | 'USER'
+    | 'PASS'
+    | 'QUIT'
+    | 'STAT'
+    | 'LIST'
+    | 'RETR'
+    | 'DELE'
+    | 'NOOP'
+    | 'RSET'
+    | 'QUIT'
+    // Optional POP3 Command Keywords:
+    | 'APOP'
+    | 'TOP'
+    | 'UIDL'
+
+type CommandMessageContent = string | Buffer | { toString(): string }
+
+export class Command {
     constructor(
-        public name: TKPOP3Client.CommandKeywords,
+        public name: CommandKeywords,
         public params?: string[],
-        public message?: TKPOP3Client.CommandMessageContent
+        public message?: CommandMessageContent
     ) { }
 
     static create(
-        name: TKPOP3Client.CommandKeywords,
+        name: CommandKeywords,
         params?: string[],
-        message?: TKPOP3Client.CommandMessageContent,
+        message?: CommandMessageContent,
     ) {
         return new Command(name, params, message)
     }
@@ -37,7 +56,7 @@ export class Command implements TKPOP3Client.ICommand {
         return this.toRaw()
     }
 
-    public update(params: string[], message: TKPOP3Client.CommandMessageContent) {
+    public update(params: string[], message: CommandMessageContent) {
         this.updateParams(params)
         this.updateMessage(message)
         return this
@@ -48,7 +67,7 @@ export class Command implements TKPOP3Client.ICommand {
         return this
     }
 
-    public updateMessage(message: TKPOP3Client.CommandMessageContent) {
+    public updateMessage(message: CommandMessageContent) {
         Object.assign(this, { message })
         return this
     }

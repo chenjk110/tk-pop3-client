@@ -1,8 +1,8 @@
 export const PORT = 110
 export const TLS_PORT = 995
 
-export const INDICATOR_OK: TKPOP3Client.ReplyIndicator = '+OK'
-export const INDICATOR_ERR: TKPOP3Client.ReplyIndicator = '-ERR'
+export const INDICATOR_OK = '+OK'
+export const INDICATOR_ERR = '-ERR'
 export const INDICATOR_OK_BUF = Buffer.from(INDICATOR_OK, 'ascii')
 export const INDICATOR_ERR_BUF = Buffer.from(INDICATOR_ERR, 'ascii')
 

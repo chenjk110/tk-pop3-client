@@ -9,9 +9,9 @@
     "import": "./dist/mjs"
   },
   "scripts": {
-    "build:cjs": "tsc --sourceMap --outDir dist/cjs --allowSyntheticDefaultImports -t es5 --module commonjs -d src/index.ts types.d.ts",
-    "build:mjs": "tsc --sourceMap --outDir dist/mjs --allowSyntheticDefaultImports -t es6 --module es6 -d src/index.ts types.d.ts",
-    "build:umd": "tsc --sourceMap --outdir dist/umd --allowSyntheticDefaultImports -t es5 --module umd -d src/index.ts types.d.ts",
+    "build:cjs": "tsc --sourceMap --outDir dist/cjs --allowSyntheticDefaultImports -t es5 --module commonjs -d src/index.ts",
+    "build:mjs": "tsc --sourceMap --outDir dist/mjs --allowSyntheticDefaultImports -t es6 --module es6 -d src/index.ts",
+    "build:umd": "tsc --sourceMap --outdir dist/umd --allowSyntheticDefaultImports -t es5 --module umd -d src/index.ts",
     "build": "npm run clean && npm run build:cjs && npm run build:mjs && npm run build:umd",
     "clean": "rm -rf dist"
   },
