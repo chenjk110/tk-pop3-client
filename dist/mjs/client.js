@@ -28,6 +28,13 @@ export class Client {
             this[`_` + key] = options[key];
         });
     }
+    get connected() {
+        var _a;
+        return (_a = this.connection) === null || _a === void 0 ? void 0 : _a.connected;
+    }
+    get connection() {
+        return this._connection;
+    }
     static create(options) {
         return new Client(options);
     }
@@ -123,6 +130,10 @@ export class Client {
             this._PASSInfo = info || '';
             return this._PASSInfo;
         });
+    }
+    close() {
+        this._connection.close();
+        this._connection = null;
     }
 }
 Client.utils = utils;

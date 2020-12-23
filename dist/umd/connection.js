@@ -91,11 +91,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             _this._socket = null;
             _this._stream = null;
             _this._commandName = '';
-            var _a = Object.assign({}, options), host = _a.host, port = _a.port, tls = _a.tls, timeout = _a.timeout;
+            var _a = Object.assign({}, options), host = _a.host, port = _a.port, tls = _a.tls, timeout = _a.timeout, _b = _a.keepAlive, keepAlive = _b === void 0 ? true : _b;
             _this.host = host;
             _this.port = port || (tls ? constants_1.TLS_PORT : constants_1.PORT);
             _this.tls = tls;
             _this.timeout = timeout;
+            _this.keepAlive = keepAlive;
             return _this;
         }
         Object.defineProperty(Connection.prototype, "connected", {
@@ -138,7 +139,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             var _a = utils_1.createPromiseRefs(), handleResolve = _a.handleResolve, handleReject = _a.handleReject, promise = _a.promise;
             var _b = this, host = _b.host, port = _b.port, timeout = _b.timeout, tls = _b.tls;
             var socket = new net_1.Socket();
-            socket.setKeepAlive(true);
+            socket.setKeepAlive(this.keepAlive);
             this._socket = tls
                 ? TLS.connect({ host: host, port: port, socket: socket })
                 : socket;
@@ -252,6 +253,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 });
             });
         };
+        Connection.prototype.close = function (had_error) {
+            var _a, _b;
+            this._socket.emit('end');
+            (_a = this._stream) === null || _a === void 0 ? void 0 : _a.emit('end');
+            (_b = this._socket) === null || _b === void 0 ? void 0 : _b.emit('close', had_error);
+            this._socket = null;
+            this._stream = null;
+        };
         Connection.prototype._destroy = function () {
             Reflect.setPrototypeOf(this, null);
             var keys = Reflect.ownKeys(this);
@@ -272,13 +281,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     this._socket.removeAllListeners();
                     this._socket.destroy();
                 }
-                this._destroy();
-                this.emit('destroy', null);
                 this.removeAllListeners();
+                this._destroy();
                 handleResolve(true);
             }
             catch (err) {
-                this.emit('destroy', err);
                 handleReject(err);
             }
             return promise;

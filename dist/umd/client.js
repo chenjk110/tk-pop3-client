@@ -87,6 +87,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 _this["_" + key] = options[key];
             });
         }
+        Object.defineProperty(Client.prototype, "connected", {
+            get: function () {
+                var _a;
+                return (_a = this.connection) === null || _a === void 0 ? void 0 : _a.connected;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Client.prototype, "connection", {
+            get: function () {
+                return this._connection;
+            },
+            enumerable: false,
+            configurable: true
+        });
         Client.create = function (options) {
             return new Client(options);
         };
@@ -283,6 +298,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     }
                 });
             });
+        };
+        Client.prototype.close = function () {
+            this._connection.close();
+            this._connection = null;
         };
         Client.utils = utils;
         Client.constants = constans;

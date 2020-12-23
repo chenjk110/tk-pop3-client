@@ -1,10 +1,9 @@
 import { CRLF } from './constants'
 
-type CommandKeywords =
+export type CommandKeywords =
     // Minimal POP3 Command Keywords:
     | 'USER'
     | 'PASS'
-    | 'QUIT'
     | 'STAT'
     | 'LIST'
     | 'RETR'
@@ -17,7 +16,7 @@ type CommandKeywords =
     | 'TOP'
     | 'UIDL'
 
-type CommandMessageContent = string | Buffer | { toString(): string }
+export type CommandMessageContent = string | Buffer | { toString(): string }
 
 export class Command {
     constructor(

@@ -34,6 +34,14 @@ export class Client {
         })
     }
 
+    get connected() {
+        return this.connection?.connected
+    }
+
+    get connection() {
+        return this._connection
+    }
+
     static create(options: IClientOptions) {
         return new Client(options)
     }
@@ -146,5 +154,10 @@ export class Client {
         )
         this._PASSInfo = info || ''
         return this._PASSInfo
+    }
+
+    close() {
+        this._connection.close()
+        this._connection = null
     }
 }

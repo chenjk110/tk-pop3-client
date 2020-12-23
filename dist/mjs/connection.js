@@ -19,11 +19,12 @@ export class Connection extends EventEmitter {
         this._socket = null;
         this._stream = null;
         this._commandName = '';
-        const { host, port, tls, timeout } = Object.assign({}, options);
+        const { host, port, tls, timeout, keepAlive = true } = Object.assign({}, options);
         this.host = host;
         this.port = port || (tls ? TLS_PORT : PORT);
         this.tls = tls;
         this.timeout = timeout;
+        this.keepAlive = keepAlive;
     }
     get connected() {
         return !!this._socket;
@@ -60,7 +61,7 @@ export class Connection extends EventEmitter {
         const { handleResolve, handleReject, promise } = createPromiseRefs();
         const { host, port, timeout, tls } = this;
         const socket = new Socket();
-        socket.setKeepAlive(true);
+        socket.setKeepAlive(this.keepAlive);
         this._socket = tls
             ? TLS.connect({ host, port, socket })
             : socket;
@@ -165,6 +166,14 @@ export class Connection extends EventEmitter {
             return promise;
         });
     }
+    close(had_error) {
+        var _a, _b;
+        this._socket.emit('end');
+        (_a = this._stream) === null || _a === void 0 ? void 0 : _a.emit('end');
+        (_b = this._socket) === null || _b === void 0 ? void 0 : _b.emit('close', had_error);
+        this._socket = null;
+        this._stream = null;
+    }
     _destroy() {
         Reflect.setPrototypeOf(this, null);
         const keys = Reflect.ownKeys(this);
@@ -184,13 +193,11 @@ export class Connection extends EventEmitter {
                 this._socket.removeAllListeners();
                 this._socket.destroy();
             }
-            this._destroy();
-            this.emit('destroy', null);
             this.removeAllListeners();
+            this._destroy();
             handleResolve(true);
         }
         catch (err) {
-            this.emit('destroy', err);
             handleReject(err);
         }
         return promise;

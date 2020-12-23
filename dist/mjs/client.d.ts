@@ -1,6 +1,6 @@
 import * as utils from './utils';
 import * as constans from './constants';
-import { IConnectionOptions } from './connection';
+import { Connection, IConnectionOptions } from './connection';
 interface IClientOptions extends IConnectionOptions {
     username: string;
     password: string;
@@ -17,6 +17,8 @@ export declare class Client {
     private _connection;
     private _PASSInfo;
     constructor(options: IClientOptions);
+    get connected(): boolean;
+    get connection(): Connection;
     static create(options: IClientOptions): Client;
     private _authorize;
     private _listify;
@@ -29,5 +31,6 @@ export declare class Client {
     STAT(): Promise<string>;
     TOP(msgOrder: string, n?: number): Promise<string>;
     QUIT(): Promise<string>;
+    close(): void;
 }
 export {};

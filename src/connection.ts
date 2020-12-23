@@ -21,9 +21,10 @@ import {
 
 export interface IConnectionOptions {
     host: string
-    port: number
+    port?: number
     tls?: boolean
     timeout?: number
+    keepAlive?: boolean
 }
 
 export class Connection extends EventEmitter {
@@ -32,6 +33,7 @@ export class Connection extends EventEmitter {
     public port: number
     public tls: boolean
     public timeout: number
+    public keepAlive: boolean
 
     private _socket: null | Socket | TLS.TLSSocket = null
     private _stream: null | Readable = null
@@ -43,11 +45,12 @@ export class Connection extends EventEmitter {
 
     constructor(options: IConnectionOptions) {
         super()
-        const { host, port, tls, timeout } = Object.assign({}, options)
+        const { host, port, tls, timeout, keepAlive = true } = Object.assign({}, options)
         this.host = host
         this.port = port || (tls ? TLS_PORT : PORT)
         this.tls = tls
         this.timeout = timeout
+        this.keepAlive = keepAlive
     }
 
     static create(options: IConnectionOptions) {
@@ -89,7 +92,7 @@ export class Connection extends EventEmitter {
 
         const socket = new Socket()
 
-        socket.setKeepAlive(true)
+        socket.setKeepAlive(this.keepAlive)
 
         this._socket = tls
             ? TLS.connect({ host, port, socket })
@@ -230,7 +233,16 @@ export class Connection extends EventEmitter {
             this.removeListener('error', handleReject)
             handleResolve([info, stream])
         })
+
         return promise
+    }
+
+    public close(had_error?: boolean) {
+        this._socket.emit('end')
+        this._stream?.emit('end')
+        this._socket?.emit('close', had_error)
+        this._socket = null
+        this._stream = null
     }
 
     private _destroy() {
@@ -244,6 +256,7 @@ export class Connection extends EventEmitter {
 
     public destroy() {
         const { handleResolve, handleReject, promise } = createPromiseRefs<true>()
+
         try {
             if (this._stream) {
                 this._stream.removeAllListeners()
@@ -253,12 +266,10 @@ export class Connection extends EventEmitter {
                 this._socket.removeAllListeners()
                 this._socket.destroy()
             }
-            this._destroy()
-            this.emit('destroy', null)
             this.removeAllListeners()
+            this._destroy()
             handleResolve(true)
         } catch (err) {
-            this.emit('destroy', err)
             handleReject(err)
         }
         return promise

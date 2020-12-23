@@ -1,6 +1,6 @@
 /// <reference types="node" />
-declare type CommandKeywords = 'USER' | 'PASS' | 'QUIT' | 'STAT' | 'LIST' | 'RETR' | 'DELE' | 'NOOP' | 'RSET' | 'QUIT' | 'APOP' | 'TOP' | 'UIDL';
-declare type CommandMessageContent = string | Buffer | {
+export declare type CommandKeywords = 'USER' | 'PASS' | 'STAT' | 'LIST' | 'RETR' | 'DELE' | 'NOOP' | 'RSET' | 'QUIT' | 'APOP' | 'TOP' | 'UIDL';
+export declare type CommandMessageContent = string | Buffer | {
     toString(): string;
 };
 export declare class Command {
@@ -16,4 +16,3 @@ export declare class Command {
     updateParams(params: string[]): this;
     updateMessage(message: CommandMessageContent): this;
 }
-export {};
