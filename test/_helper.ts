@@ -114,18 +114,18 @@ export class TestServer {
 
             else if (name === `LIST` || name === `UIDL`) {
                 const [order] = payloads
-                const rand = Math.random().toString(16).slice(3)
+                const rand = () => Math.random().toString(16).slice(3)
                 if (order) {
                     if (isNaN(+order)) {
                         socket.write(this.messageERR(`Invalid Order ${order}`))
                     } else {
-                        socket.write(this.messageOK() + `${order} ${rand}\r\n`)
+                        socket.write(this.messageOK(`${order} ${rand()}`))
                     }
                 } else {
                     const listResult = Array.from(
                         { length: 10 },
                         (_, idx) => {
-                            return `${idx} ${rand}\r\n`
+                            return `${idx} ${rand()}\r\n`
                         }
                     ).join('')
                     socket.write(this.messageOK(`Total 10`) + listResult)

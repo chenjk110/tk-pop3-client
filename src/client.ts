@@ -81,12 +81,16 @@ export class Client {
         return msgOrder ? list[0] : list
     }
 
+    async UIDL(): Promise<string[][]>
+    async UIDL(msgOrder: string): Promise<string[]>
     async UIDL(msgOrder?: string) {
         await this._authorize()
-        const [_, stream] = await this._connection.send(
+        const [info, stream] = await this._connection.send(
             Command.create('UIDL', [msgOrder])
         )
-        return await this._listify(stream, msgOrder)
+        return msgOrder
+            ? info.split(' ')
+            : await this._listify(stream, msgOrder)
     }
 
     async NOOP() {
@@ -97,12 +101,16 @@ export class Client {
         return
     }
 
+    async LIST(): Promise<string[][]>
+    async LIST(msgOrder: string): Promise<string[]>
     async LIST(msgOrder?: string) {
         await this._authorize()
-        const [_, stream] = await this._connection.send(
+        const [info, stream] = await this._connection.send(
             Command.create('LIST', [msgOrder])
         )
-        return await this._listify(stream, msgOrder)
+        return msgOrder
+            ? info.split(' ')
+            : await this._listify(stream, msgOrder)
     }
 
     async RSET() {
@@ -113,22 +121,24 @@ export class Client {
         return info
     }
 
-    async RETR(msgOrder?: string) {
+    async RETR(msgOrder: string) {
         await this._authorize()
+        
         const [_, stream] = await this._connection.send(
             Command.create('RETR', [msgOrder])
         )
+
         return utils.stream2String(stream)
     }
 
-    async DELE(msgOrder?: string) {
+    async DELE(msgOrder: string) {
         await this._authorize()
         const [info] = await this._connection.send(
             Command.create('DELE', [msgOrder])
         )
         return info
     }
-    
+
     async STAT() {
         await this._authorize()
         const [info] = await this._connection.send(
@@ -137,7 +147,7 @@ export class Client {
         return info
     }
 
-    async TOP(msgOrder: string, n = 0) {
+    async TOP(msgOrder: string, n: number) {
         await this._authorize()
         const [_, stream] = await this._connection.send(
             Command.create('TOP', [msgOrder], n)

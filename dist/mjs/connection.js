@@ -139,6 +139,10 @@ export class Connection extends EventEmitter {
             if (!this._stream) {
                 resolveValidateStream(true);
             }
+            else {
+                this._endStream();
+                resolveValidateStream(true);
+            }
             this.once('end', (err) => {
                 if (err) {
                     rejectValidateStream(err);
@@ -146,7 +150,9 @@ export class Connection extends EventEmitter {
                 }
                 resolveValidateStream(true);
             });
-            this.once('error', (err) => rejectValidateStream(err));
+            this.once('error', (err) => {
+                rejectValidateStream(err);
+            });
             yield validateStream;
             try {
                 if (payload instanceof Command) {
@@ -157,7 +163,6 @@ export class Connection extends EventEmitter {
                 }
             }
             catch (err) {
-                console.error(err);
                 this._commandName = '';
             }
             const { handleResolve, handleReject, promise, } = createPromiseRefs();

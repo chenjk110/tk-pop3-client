@@ -68,8 +68,10 @@ export class Client {
     UIDL(msgOrder) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this._authorize();
-            const [_, stream] = yield this._connection.send(Command.create('UIDL', [msgOrder]));
-            return yield this._listify(stream, msgOrder);
+            const [info, stream] = yield this._connection.send(Command.create('UIDL', [msgOrder]));
+            return msgOrder
+                ? info.split(' ')
+                : yield this._listify(stream, msgOrder);
         });
     }
     NOOP() {
@@ -82,8 +84,10 @@ export class Client {
     LIST(msgOrder) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this._authorize();
-            const [_, stream] = yield this._connection.send(Command.create('LIST', [msgOrder]));
-            return yield this._listify(stream, msgOrder);
+            const [info, stream] = yield this._connection.send(Command.create('LIST', [msgOrder]));
+            return msgOrder
+                ? info.split(' ')
+                : yield this._listify(stream, msgOrder);
         });
     }
     RSET() {
@@ -114,7 +118,7 @@ export class Client {
             return info;
         });
     }
-    TOP(msgOrder, n = 0) {
+    TOP(msgOrder, n) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this._authorize();
             const [_, stream] = yield this._connection.send(Command.create('TOP', [msgOrder], n));

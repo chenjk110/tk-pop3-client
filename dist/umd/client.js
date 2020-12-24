@@ -153,17 +153,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         };
         Client.prototype.UIDL = function (msgOrder) {
             return __awaiter(this, void 0, void 0, function () {
-                var _a, _, stream;
-                return __generator(this, function (_b) {
-                    switch (_b.label) {
+                var _a, info, stream, _b;
+                return __generator(this, function (_c) {
+                    switch (_c.label) {
                         case 0: return [4, this._authorize()];
                         case 1:
-                            _b.sent();
+                            _c.sent();
                             return [4, this._connection.send(command_1.Command.create('UIDL', [msgOrder]))];
                         case 2:
-                            _a = _b.sent(), _ = _a[0], stream = _a[1];
-                            return [4, this._listify(stream, msgOrder)];
-                        case 3: return [2, _b.sent()];
+                            _a = _c.sent(), info = _a[0], stream = _a[1];
+                            if (!msgOrder) return [3, 3];
+                            _b = info.split(' ');
+                            return [3, 5];
+                        case 3: return [4, this._listify(stream, msgOrder)];
+                        case 4:
+                            _b = _c.sent();
+                            _c.label = 5;
+                        case 5: return [2, _b];
                     }
                 });
             });
@@ -185,17 +191,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         };
         Client.prototype.LIST = function (msgOrder) {
             return __awaiter(this, void 0, void 0, function () {
-                var _a, _, stream;
-                return __generator(this, function (_b) {
-                    switch (_b.label) {
+                var _a, info, stream, _b;
+                return __generator(this, function (_c) {
+                    switch (_c.label) {
                         case 0: return [4, this._authorize()];
                         case 1:
-                            _b.sent();
+                            _c.sent();
                             return [4, this._connection.send(command_1.Command.create('LIST', [msgOrder]))];
                         case 2:
-                            _a = _b.sent(), _ = _a[0], stream = _a[1];
-                            return [4, this._listify(stream, msgOrder)];
-                        case 3: return [2, _b.sent()];
+                            _a = _c.sent(), info = _a[0], stream = _a[1];
+                            if (!msgOrder) return [3, 3];
+                            _b = info.split(' ');
+                            return [3, 5];
+                        case 3: return [4, this._listify(stream, msgOrder)];
+                        case 4:
+                            _b = _c.sent();
+                            _c.label = 5;
+                        case 5: return [2, _b];
                     }
                 });
             });
@@ -265,7 +277,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             });
         };
         Client.prototype.TOP = function (msgOrder, n) {
-            if (n === void 0) { n = 0; }
             return __awaiter(this, void 0, void 0, function () {
                 var _a, _, stream;
                 return __generator(this, function (_b) {

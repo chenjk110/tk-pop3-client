@@ -213,6 +213,10 @@ var Connection = (function (_super) {
                         if (!this._stream) {
                             resolveValidateStream(true);
                         }
+                        else {
+                            this._endStream();
+                            resolveValidateStream(true);
+                        }
                         this.once('end', function (err) {
                             if (err) {
                                 rejectValidateStream(err);
@@ -220,7 +224,9 @@ var Connection = (function (_super) {
                             }
                             resolveValidateStream(true);
                         });
-                        this.once('error', function (err) { return rejectValidateStream(err); });
+                        this.once('error', function (err) {
+                            rejectValidateStream(err);
+                        });
                         return [4, validateStream];
                     case 1:
                         _c.sent();
@@ -233,7 +239,6 @@ var Connection = (function (_super) {
                             }
                         }
                         catch (err) {
-                            console.error(err);
                             this._commandName = '';
                         }
                         _b = utils_1.createPromiseRefs(), handleResolve = _b.handleResolve, handleReject = _b.handleReject, promise = _b.promise;

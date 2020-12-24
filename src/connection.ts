@@ -194,6 +194,9 @@ export class Connection extends EventEmitter {
 
         if (!this._stream) {
             resolveValidateStream(true)
+        } else {
+            this._endStream()
+            resolveValidateStream(true)
         }
 
         this.once('end', (err) => {
@@ -204,7 +207,9 @@ export class Connection extends EventEmitter {
             resolveValidateStream(true)
         })
 
-        this.once('error', (err) => rejectValidateStream(err))
+        this.once('error', (err) => {
+            rejectValidateStream(err)
+        })
 
         await validateStream // await for validation
 
@@ -216,7 +221,6 @@ export class Connection extends EventEmitter {
                 this._commandName = payload.trim().split(' ')[0]
             }
         } catch (err) {
-            console.error(err)
             this._commandName = ''
         }
 

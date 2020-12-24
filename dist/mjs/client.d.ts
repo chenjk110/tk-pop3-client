@@ -22,14 +22,16 @@ export declare class Client {
     static create(options: IClientOptions): Client;
     private _authorize;
     private _listify;
-    UIDL(msgOrder?: string): Promise<string[] | string[][]>;
+    UIDL(): Promise<string[][]>;
+    UIDL(msgOrder: string): Promise<string[]>;
     NOOP(): Promise<void>;
-    LIST(msgOrder?: string): Promise<string[] | string[][]>;
+    LIST(): Promise<string[][]>;
+    LIST(msgOrder: string): Promise<string[]>;
     RSET(): Promise<string>;
-    RETR(msgOrder?: string): Promise<string>;
-    DELE(msgOrder?: string): Promise<string>;
+    RETR(msgOrder: string): Promise<string>;
+    DELE(msgOrder: string): Promise<string>;
     STAT(): Promise<string>;
-    TOP(msgOrder: string, n?: number): Promise<string>;
+    TOP(msgOrder: string, n: number): Promise<string>;
     QUIT(): Promise<string>;
     close(): void;
 }

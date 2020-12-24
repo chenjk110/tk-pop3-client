@@ -222,6 +222,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                             if (!this._stream) {
                                 resolveValidateStream(true);
                             }
+                            else {
+                                this._endStream();
+                                resolveValidateStream(true);
+                            }
                             this.once('end', function (err) {
                                 if (err) {
                                     rejectValidateStream(err);
@@ -229,7 +233,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                                 }
                                 resolveValidateStream(true);
                             });
-                            this.once('error', function (err) { return rejectValidateStream(err); });
+                            this.once('error', function (err) {
+                                rejectValidateStream(err);
+                            });
                             return [4, validateStream];
                         case 1:
                             _c.sent();
@@ -242,7 +248,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                                 }
                             }
                             catch (err) {
-                                console.error(err);
                                 this._commandName = '';
                             }
                             _b = utils_1.createPromiseRefs(), handleResolve = _b.handleResolve, handleReject = _b.handleReject, promise = _b.promise;

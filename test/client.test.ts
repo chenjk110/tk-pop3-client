@@ -35,6 +35,7 @@ describe('Client', function () {
 
     it(`LIST:0`, async () => {
         const item0 = await client.LIST('0')
+        console.log(`item0000`, item0)
         const [order, message] = item0
         assert.strictEqual(order, '0')
         assert.strictEqual(typeof message, 'string')
@@ -56,6 +57,7 @@ describe('Client', function () {
     })
 
     it(`DELE`, async () => {
+        // @ts-ignore
         await assert.rejects(() => client.DELE())
     })
 
@@ -66,7 +68,7 @@ describe('Client', function () {
     })
 
     it(`RETR`, async () => {
-        await client.RETR()
+        await client.RETR('1')
     })
 
     it(`RSET`, async () => {
@@ -78,8 +80,12 @@ describe('Client', function () {
     })
 
     it(`TOP`, async () => {
+        // @ts-ignore
         await assert.rejects(() => client.TOP(''))
-        await client.TOP('1')
+        // @ts-ignore
+        await assert.rejects(() => client.TOP('1'))
+
+        await client.TOP('1', 0)
     })
 
     it(`QUIT`, async () => {
