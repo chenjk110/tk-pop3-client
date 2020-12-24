@@ -19,17 +19,11 @@ var Command = (function () {
         return commands.map(function (commd) { return commd.toRaw(); }).join('');
     };
     Command.prototype.toRaw = function () {
-        var raw = "" + this.name;
-        if (Array.isArray(this.params) && this.params.length) {
-            this.params.filter(Boolean).forEach(function (param) {
-                raw = raw + ' ' + param;
-            });
-        }
-        if (this.message) {
-            raw = raw + ' ' + this.message.toString();
-        }
-        raw = raw + constants_1.CRLF;
-        return raw;
+        var _a = this, name = _a.name, _b = _a.message, message = _b === void 0 ? '' : _b, _c = _a.params, params = _c === void 0 ? [] : _c;
+        var raw = ["" + name].concat(params, "" + message)
+            .filter(function (v) { return v != null && v !== ''; })
+            .join(' ');
+        return raw + constants_1.CRLF;
     };
     Command.prototype.toString = function () {
         return this.toRaw();

@@ -75,18 +75,14 @@ export class TestServer {
             // simple implementation
             if (name === `NOOP`
                 || name === `STAT`
-                || name === `TOP`
                 || name === `APOP`
-                || name === `RETR`) {
+                || name === `RETR`
+                || name === `RSET`) {
                 socket.write(this.messageOK())
             }
 
             else if (name === `QUIT`) {
                 socket.write(this.messageOK(`Bye Bye!`))
-            }
-
-            else if (name === `REST`) {
-                socket.write(this.messageOK(`Rest 10`))
             }
 
             else if (name === `USER`) {
@@ -133,6 +129,22 @@ export class TestServer {
                         }
                     ).join('')
                     socket.write(this.messageOK(`Total 10`) + listResult)
+                }
+            }
+
+            else if (name === 'TOP') {
+                const [order, n] = payloads
+                if (isNaN(+order) || +order < 0) {
+                    socket.write(this.messageERR(`Invalid Message-Number Argument: '${order}'`))
+                } else if (isNaN(+n) || +n < 0) {
+                    socket.write(this.messageERR(`Invalid Lines Arugment: '${n}'`))
+                } else {
+                    socket.write(this.messageOK(`top of message follows`))
+                    socket.write([
+                        'content content content',
+                        'content content content',
+                        'content content content',
+                    ].join('\r\n'))
                 }
             }
 

@@ -12,17 +12,11 @@ export class Command {
         return commands.map(commd => commd.toRaw()).join('');
     }
     toRaw() {
-        let raw = `${this.name}`;
-        if (Array.isArray(this.params) && this.params.length) {
-            this.params.filter(Boolean).forEach(param => {
-                raw = raw + ' ' + param;
-            });
-        }
-        if (this.message) {
-            raw = raw + ' ' + this.message.toString();
-        }
-        raw = raw + CRLF;
-        return raw;
+        let { name, message = '', params = [] } = this;
+        const raw = [`${name}`].concat(params, `${message}`)
+            .filter(v => v != null && v !== '')
+            .join(' ');
+        return raw + CRLF;
     }
     toString() {
         return this.toRaw();
