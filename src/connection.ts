@@ -149,6 +149,7 @@ export class Connection extends EventEmitter {
 
             // Unexpected Response Error
             const err = new Error(`Unexpected response:\n${buffer.toString()}`)
+            this.emit('error', err)
             handleReject(err)
         })
 
@@ -209,7 +210,11 @@ export class Connection extends EventEmitter {
 
         // cache command name
         try {
-            this._commandName = payload.toString().split(' ')[0].trim()
+            if (payload instanceof Command) {
+                this._commandName = payload.name
+            } else {
+                this._commandName = payload.trim().split(' ')[0]
+            }
         } catch (err) {
             console.error(err)
             this._commandName = ''

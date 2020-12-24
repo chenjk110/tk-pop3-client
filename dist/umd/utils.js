@@ -28,11 +28,13 @@
     };
     exports.createPromiseRefs = createPromiseRefs;
     var isResOK = function (buffer) {
-        return buffer.slice(0, constants_1.INDICATOR_OK_BUF.length).equals(constants_1.INDICATOR_OK_BUF);
+        var indicator = buffer.slice(0, constants_1.INDICATOR_OK_BUF.length).toString().toUpperCase();
+        return indicator === constants_1.INDICATOR_OK_BUF.toString();
     };
     exports.isResOK = isResOK;
     var isResERR = function (buffer) {
-        return buffer.slice(0, constants_1.INDICATOR_ERR_BUF.length).equals(constants_1.INDICATOR_ERR_BUF);
+        var indicator = buffer.slice(0, constants_1.INDICATOR_ERR_BUF.length).toString().toUpperCase();
+        return indicator === constants_1.INDICATOR_ERR_BUF.toString();
     };
     exports.isResERR = isResERR;
     var pickMessageContent = function (buffer) {

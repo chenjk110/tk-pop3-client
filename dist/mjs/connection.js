@@ -11,6 +11,7 @@ import * as TLS from 'tls';
 import { Socket } from 'net';
 import { EventEmitter } from 'events';
 import { Readable } from 'stream';
+import { Command } from './command';
 import { CRLF, MULTI_LINE_CMD_NAMES, TLS_PORT, PORT, } from './constants';
 import { containsEndedBufs, containsTermBuf, omitTermBuf, createPromiseRefs, isResERR, isResOK, pickMessageContent, } from './utils';
 export class Connection extends EventEmitter {
@@ -105,6 +106,7 @@ export class Connection extends EventEmitter {
                 return;
             }
             const err = new Error(`Unexpected response:\n${buffer.toString()}`);
+            this.emit('error', err);
             handleReject(err);
         });
         this._socket.on('error', (err) => {
@@ -147,7 +149,12 @@ export class Connection extends EventEmitter {
             this.once('error', (err) => rejectValidateStream(err));
             yield validateStream;
             try {
-                this._commandName = payload.toString().split(' ')[0].trim();
+                if (payload instanceof Command) {
+                    this._commandName = payload.name;
+                }
+                else {
+                    this._commandName = payload.trim().split(' ')[0];
+                }
             }
             catch (err) {
                 console.error(err);

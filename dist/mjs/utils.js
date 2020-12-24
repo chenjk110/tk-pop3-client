@@ -1,4 +1,4 @@
-import { TERM_BUF_S, TERM_BUF, INDICATOR_OK_BUF, INDICATOR_ERR_BUF, CRLF } from './constants';
+import { TERM_BUF_S, TERM_BUF, CRLF, INDICATOR_ERR_BUF, INDICATOR_OK_BUF } from './constants';
 export const containsEndedBufs = (buffer) => TERM_BUF_S.some((buf) => buf.equals(buffer));
 export const containsTermBuf = (buffer) => buffer.slice(-TERM_BUF.length).equals(TERM_BUF);
 export const omitTermBuf = (buffer) => buffer.slice(0, -TERM_BUF.length);
@@ -12,10 +12,12 @@ export const createPromiseRefs = () => {
     return { handleReject, handleResolve, promise };
 };
 export const isResOK = (buffer) => {
-    return buffer.slice(0, INDICATOR_OK_BUF.length).equals(INDICATOR_OK_BUF);
+    const indicator = buffer.slice(0, INDICATOR_OK_BUF.length).toString().toUpperCase();
+    return indicator === INDICATOR_OK_BUF.toString();
 };
 export const isResERR = (buffer) => {
-    return buffer.slice(0, INDICATOR_ERR_BUF.length).equals(INDICATOR_ERR_BUF);
+    const indicator = buffer.slice(0, INDICATOR_ERR_BUF.length).toString().toUpperCase();
+    return indicator === INDICATOR_ERR_BUF.toString();
 };
 export const pickMessageContent = (buffer) => {
     const indexCRLF = buffer.indexOf(CRLF);

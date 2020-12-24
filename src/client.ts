@@ -56,7 +56,7 @@ export class Client {
             })
         }
 
-        if (this._connection.connected) {
+        if (this.connected) {
             return this._PASSInfo
         }
 
@@ -128,7 +128,7 @@ export class Client {
         )
         return info
     }
-
+    
     async STAT() {
         await this._authorize()
         const [info] = await this._connection.send(
@@ -146,7 +146,7 @@ export class Client {
     }
 
     async QUIT() {
-        if (!this._connection.connected) {
+        if (!this.connected) {
             return this._PASSInfo || 'Bye!'
         }
         const [info] = await this._connection.send(

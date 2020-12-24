@@ -73,6 +73,7 @@ var TLS = __importStar(require("tls"));
 var net_1 = require("net");
 var events_1 = require("events");
 var stream_1 = require("stream");
+var command_1 = require("./command");
 var constants_1 = require("./constants");
 var utils_1 = require("./utils");
 var Connection = (function (_super) {
@@ -174,6 +175,7 @@ var Connection = (function (_super) {
                 return;
             }
             var err = new Error("Unexpected response:\n" + buffer.toString());
+            _this.emit('error', err);
             handleReject(err);
         });
         this._socket.on('error', function (err) {
@@ -223,7 +225,12 @@ var Connection = (function (_super) {
                     case 1:
                         _c.sent();
                         try {
-                            this._commandName = payload.toString().split(' ')[0].trim();
+                            if (payload instanceof command_1.Command) {
+                                this._commandName = payload.name;
+                            }
+                            else {
+                                this._commandName = payload.trim().split(' ')[0];
+                            }
                         }
                         catch (err) {
                             console.error(err);

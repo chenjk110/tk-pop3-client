@@ -1,5 +1,6 @@
+
 import { Readable } from 'stream'
-import { TERM_BUF_S, TERM_BUF, INDICATOR_OK_BUF, INDICATOR_ERR_BUF, CRLF } from './constants'
+import { TERM_BUF_S, TERM_BUF, CRLF, INDICATOR_ERR_BUF, INDICATOR_OK_BUF } from './constants'
 
 export const containsEndedBufs = (buffer: Buffer) => TERM_BUF_S.some((buf) => buf.equals(buffer))
 
@@ -18,11 +19,13 @@ export const createPromiseRefs = <T>() => {
 }
 
 export const isResOK = (buffer: Buffer) => {
-    return buffer.slice(0, INDICATOR_OK_BUF.length).equals(INDICATOR_OK_BUF)
+    const indicator = buffer.slice(0, INDICATOR_OK_BUF.length).toString().toUpperCase()
+    return indicator === INDICATOR_OK_BUF.toString()
 }
 
 export const isResERR = (buffer: Buffer) => {
-    return buffer.slice(0, INDICATOR_ERR_BUF.length).equals(INDICATOR_ERR_BUF)
+    const indicator = buffer.slice(0, INDICATOR_ERR_BUF.length).toString().toUpperCase()
+    return indicator === INDICATOR_ERR_BUF.toString()
 }
 
 export const pickMessageContent = (buffer: Buffer) => {

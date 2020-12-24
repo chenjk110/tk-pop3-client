@@ -110,7 +110,7 @@ var Client = (function () {
                                 tls: this._tls
                             });
                         }
-                        if (this._connection.connected) {
+                        if (this.connected) {
                             return [2, this._PASSInfo];
                         }
                         return [4, this._connection.connect()];
@@ -278,7 +278,7 @@ var Client = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!this._connection.connected) {
+                        if (!this.connected) {
                             return [2, this._PASSInfo || 'Bye!'];
                         }
                         return [4, this._connection.send(command_1.Command.create('QUIT'))];

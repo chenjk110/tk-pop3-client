@@ -48,7 +48,7 @@ export class Client {
                     tls: this._tls
                 });
             }
-            if (this._connection.connected) {
+            if (this.connected) {
                 return this._PASSInfo;
             }
             yield this._connection.connect();
@@ -123,7 +123,7 @@ export class Client {
     }
     QUIT() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this._connection.connected) {
+            if (!this.connected) {
                 return this._PASSInfo || 'Bye!';
             }
             const [info] = yield this._connection.send(Command.create('QUIT'));
